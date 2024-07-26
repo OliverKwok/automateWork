@@ -22,9 +22,17 @@ export async function up(knex: Knex): Promise<void> {
     table.string("work_order_id");
     table.string("spart_part");
   });
+
+  await knex.schema.createTable("wip", (table) => {
+    table.increments("id").primary();
+    table.string("job_number");
+    table.string("sn");
+    table.string("status");
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists("wip");
   await knex.schema.dropTableIfExists("spare_part");
   await knex.schema.dropTableIfExists("word_order");
 }
