@@ -11,7 +11,6 @@ export async function up(knex: Knex): Promise<void> {
     table.string("model_name");
     table.string("internal_name");
     table.string("order_created_date");
-    table.string("tat");
     table.string("wip_status");
     table.string("comment");
     table.string("customer_name");
@@ -29,9 +28,16 @@ export async function up(knex: Knex): Promise<void> {
     table.string("sn");
     table.string("status");
   });
+
+  await knex.schema.createTable("substitution_spare_part", (table) => {
+    table.increments("id").primary();
+    table.string("from");
+    table.string("to");
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists("substitution_spare_part");
   await knex.schema.dropTableIfExists("wip");
   await knex.schema.dropTableIfExists("spare_part");
   await knex.schema.dropTableIfExists("word_order");
