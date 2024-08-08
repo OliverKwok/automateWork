@@ -7,11 +7,12 @@ const month = String(today.getMonth() + 1).padStart(2, "0");
 const day = String(today.getDate()).padStart(2, "0");
 
 const wipExcelFileName = `T185736_Honor_WIP_${year}${month}${day}`;
-const UnclosedOrderExcelFileName = `线下未闭环工单_原始明细全量导出 ${year}${month}${day}`;
+const workOrderExcelFileName = `线下未闭环工单_原始明细全量导出 ${year}${month}${day}`;
 const wipSheetName = "WIP";
+const workOrderSheetName = "sheet0";
 
 interface Wip {
-  job_number: string;
+  job_number: string; // SBE job number
   sn: string;
   status: string;
 }
@@ -60,27 +61,79 @@ async function wipWriteToDb(input: Wip[]) {
   }
 }
 
+async function workOrderWriteToDb(input: WorkOrder[]) {
+  const transaction = await db.transaction();
+  try {
+    for (const item of input) {
+      const existing = await transaction("work_order")
+        .where({ work_order_id: item.work_order_id })
+        .first();
+      if (existing) {
+        await transaction("work_order")
+          .where({ work_order_id: item.work_order_id })
+          .update({ status: item.status });
+      } else {
+        await transaction("work_order").insert(item);
+      }
+    }
+    await transaction.commit();
+    return input.length;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+}
+
 async function main() {
   try {
-    const wipImportExcelResult = await importExcel(
-      wipExcelFileName,
-      wipSheetName
-    );
-    const wipImportExcelResultTransform = wipImportExcelResult.map(
-      (item: any) => {
-        return {
-          job_number: item["Job Number"],
-          sn: item["Serial In"],
-          status: item["Status"],
-        };
-      }
-    );
-    const writeWorkOrderResult = await wipWriteToDb(
-      wipImportExcelResultTransform
-    );
-    console.log(`Inserted/Updated ${writeWorkOrderResult} rows for WIP`);
-  } catch (error) {
-    console.error("Error processing work orders:", error);
+    try {
+      const wipImportExcelResult = await importExcel(
+        wipExcelFileName,
+        wipSheetName
+      );
+      const wipImportExcelResultTransform = wipImportExcelResult.map(
+        (item: any) => {
+          return {
+            job_number: item["Job Number"],
+            sn: item["Serial In"],
+            status: item["Status"],
+          };
+        }
+      );
+      const wipWriteResult = await wipWriteToDb(wipImportExcelResultTransform);
+      console.log(`Inserted/Updated ${wipWriteResult} rows for WIP`);
+    } catch (error) {
+      console.error("Error processing WIP", error);
+    }
+
+    try {
+      const workOrderImportExcelResult = await importExcel(
+        workOrderExcelFileName,
+        workOrderSheetName
+      );
+      const workOrderImportExcelResultTransform =
+        workOrderImportExcelResult.map((item: any) => {
+          return {
+            work_order_id: item[""],
+            work_order_number: item[""],
+            status: item[""],
+            sn: item[""],
+            product_series: item[""],
+            model_name: item[""],
+            internal_name: item[""],
+            order_created_date: item[""],
+            wip_status: item[""],
+            comment: item[""],
+            customer_name: item[""],
+          };
+        });
+      const workOrderWriteResult = await workOrderWriteToDb(
+        workOrderImportExcelResultTransform
+      );
+      console.log(`Inserted/Updated ${workOrderWriteResult} rows for WIP`);
+    } catch (error) {
+      console.error("Error processing WIP", error);
+    }
   } finally {
     await db.destroy();
   }
