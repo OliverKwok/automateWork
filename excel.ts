@@ -18,6 +18,7 @@ interface Wip {
 }
 
 interface WorkOrder {
+  supplier: string;
   work_order_id: string;
   work_order_number: string;
   status: string;
@@ -26,9 +27,6 @@ interface WorkOrder {
   model_name: string;
   internal_name: string;
   order_created_date: string;
-  wip_status: string;
-  comment: string;
-  customer_name: string;
 }
 
 async function importExcel(excelFileName: string, sheetName: string) {
@@ -111,26 +109,28 @@ async function main() {
         workOrderExcelFileName,
         workOrderSheetName
       );
+
+      // console.log(workOrderImportExcelResult[0]);
       const workOrderImportExcelResultTransform =
         workOrderImportExcelResult.map((item: any) => {
           return {
-            work_order_id: item[""],
-            work_order_number: item[""],
-            status: item[""],
-            sn: item[""],
-            product_series: item[""],
-            model_name: item[""],
-            internal_name: item[""],
-            order_created_date: item[""],
-            wip_status: item[""],
-            comment: item[""],
-            customer_name: item[""],
+            supplier: item["供应商"],
+            work_order_id: item["工单ID"],
+            work_order_number: item["工单号"],
+            status: item["工单状态"],
+            sn: item["SN"],
+            product_series: item["产品系列"],
+            model_name: item["产品传播名"],
+            internal_name: item["产品型号"],
+            order_created_date: item["工单创建时间"],
           };
         });
       const workOrderWriteResult = await workOrderWriteToDb(
         workOrderImportExcelResultTransform
       );
-      console.log(`Inserted/Updated ${workOrderWriteResult} rows for WIP`);
+      console.log(
+        `Inserted/Updated ${workOrderWriteResult} rows for work order`
+      );
     } catch (error) {
       console.error("Error processing WIP", error);
     }

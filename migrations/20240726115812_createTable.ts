@@ -3,6 +3,7 @@ import type { Knex } from "knex";
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable("work_order", (table) => {
     table.increments("id").primary();
+    table.string("supplier");
     table.string("work_order_id");
     table.string("work_order_number");
     table.string("status");
@@ -11,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("model_name");
     table.string("internal_name");
     table.string("order_created_date");
-    table.string("wip_status");
+    // table.string("wip_status");
     table.string("comment");
     table.string("customer_name");
   });
@@ -27,6 +28,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("job_number");
     table.string("sn");
     table.string("status");
+    table.boolean("wip_daily_open");
   });
 
   await knex.schema.createTable("substitution_spare_part", (table) => {
