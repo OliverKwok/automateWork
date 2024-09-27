@@ -20,7 +20,8 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable("spare_part", (table) => {
     table.increments("id").primary();
     table.string("work_order_id");
-    table.string("spart_part");
+    table.string("spart_part_id");
+    table.boolean("status_open").defaultTo(true);
   });
 
   await knex.schema.createTable("wip", (table) => {
@@ -28,7 +29,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("job_number");
     table.string("sn");
     table.string("status");
-    table.boolean("wip_daily_open");
+    table.boolean("wip_daily_open").defaultTo(true);
   });
 
   await knex.schema.createTable("substitution_spare_part", (table) => {
@@ -36,9 +37,17 @@ export async function up(knex: Knex): Promise<void> {
     table.string("from");
     table.string("to");
   });
+
+  await knex.schema.createTable("shortage_spare_part", (table) => {
+    table.increments("id").primary();
+    table.string("spare_part_id");
+    table.string("comment");
+    table.boolean("status_open").defaultTo(true);
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists("shortage_spare_part");
   await knex.schema.dropTableIfExists("substitution_spare_part");
   await knex.schema.dropTableIfExists("wip");
   await knex.schema.dropTableIfExists("spare_part");
