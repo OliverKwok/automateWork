@@ -1,5 +1,7 @@
 import * as XLSX from "xlsx";
 const db = require("./db/db.js");
+import { Wip } from "./type";
+import { WorkOrder } from "./type";
 
 const today = new Date();
 const year = today.getFullYear();
@@ -10,24 +12,6 @@ const wipExcelFileName = `T185736_Honor_WIP_${year}${month}${day}`;
 const workOrderExcelFileName = `线下未闭环工单_原始明细全量导出 ${year}${month}${day}`;
 const wipSheetName = "WIP";
 const workOrderSheetName = "sheet0";
-
-interface Wip {
-  job_number: string; // SBE job number
-  sn: string;
-  status: string;
-}
-
-interface WorkOrder {
-  supplier: string;
-  work_order_id: string;
-  work_order_number: string;
-  status: string;
-  sn: string;
-  product_series: string;
-  model_name: string;
-  internal_name: string;
-  order_created_date: string;
-}
 
 async function importExcel(excelFileName: string, sheetName: string) {
   const workbook = XLSX.readFile(`./import/${excelFileName}.xlsx`);
