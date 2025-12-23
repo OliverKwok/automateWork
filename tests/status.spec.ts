@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-console.log(process.env.ccpd_password);
-
 const workOrderListFilePath = path.resolve(__dirname, "txt", "status.txt");
 const workOrderListPlain = fs.readFileSync(workOrderListFilePath, "utf-8");
 

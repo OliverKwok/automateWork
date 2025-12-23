@@ -45,5 +45,6 @@ export async function seed(knex: Knex): Promise<void> {
     { from: "0235AGLR", to: "0235ALRW" },
     { from: "0235AHDQ", to: "0235ALUC" },
     { from: "0235AKES", to: "0235AMFG" },
+    { from: "5168ABNJ", to: "5168ABLB" },
   ]);
 }

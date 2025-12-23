@@ -2,6 +2,9 @@ import { test, expect, chromium } from "@playwright/test";
 
 import fs from "fs";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const sparePartListFilePath = path.resolve(__dirname, "txt", "sparePart.txt");
 const sparePartListPlain = fs.readFileSync(sparePartListFilePath, "utf-8");
@@ -26,8 +29,8 @@ test("goodStockCheck", async () => {
 
   // console.log(sparePartListPerOrder);
 
-  const username = "o90024751";
-  const password = "n2$/4.?F";
+  const username = process.env.ccpd_user;
+  const password = process.env.ccpd_password;
   const stockCheckLink =
     "https://workplace.hihonor.com/#/group/service/inventory-query";
   const sbeCode = "C18823001";
