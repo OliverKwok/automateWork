@@ -1,0 +1,72 @@
+{
+  "rules": [
+    {
+      "name": "Move 'no need to reply' emails",
+      "type": "move_file",
+      "condition": {
+        "field": "filename_title",
+        "operator": "contains_any",
+        "values": [
+          "honor wip",
+          "asc tat monitoring"
+        ]
+      },
+      "destination_folder": "no_need_to_reply"
+    },
+    {
+      "name": "Classify 'suspicious crisis'",
+      "type": "add_metadata",
+      "condition": {
+        "field": "filename_title",
+        "operator": "contains_any",
+        "values": [
+          "suspicious crisis"
+        ]
+      },
+      "metadata": {
+        "category": "suspicious crisis"
+      }
+    },
+    {
+      "name": "Classify 'repair price complaint'",
+      "type": "add_metadata",
+      "condition": {
+        "field": "content",
+        "operator": "contains_any",
+        "values": [
+          "repair price complaint",
+          "repair price complain"
+        ]
+      },
+      "metadata": {
+        "category": "repair price complaint"
+      }
+    },
+    {
+      "name": "Handle delivery emails",
+      "type": "delivery_logic",
+      "condition": {
+        "field": "recipients",
+        "operator": "contains_any",
+        "values": [
+          "dionne.meades@cevalogistics.com",
+          "Daniella.Ubendran@Cevalogistics.com"
+        ]
+      },
+      "params": {
+        "check_string": ["@oliver", "@oliverkwok"],
+        "category_if_present": "delivery",
+        "move_folder_if_not_present": "no_need_to_reply"
+      }
+    },
+    {
+      "name": "Move 'Attached Image' emails from printer",
+      "type": "title_and_sender_move",
+      "params": {
+        "title": "Attached Image",
+        "sender": "ukprinter@pmail.hihonor.com",
+        "destination_folder": "no_need_to_reply"
+      }
+    }
+  ]
+}
