@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 const db = require("./db/db.js");
-import { Wip } from "./type";
-import { WorkOrder } from "./type";
+import { Wip } from "../type";
+import { WorkOrder } from "../type";
 
 const today = new Date();
 const year = today.getFullYear();
